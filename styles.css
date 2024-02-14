@@ -1,1 +1,11 @@
-# sdgsdg 
+.seat {
+  width: 30px;
+  height: 30px;
+  background-color: #4CAF50;
+  margin: 5px;
+  cursor: pointer;
+}
+.booked {
+  background-color: #F44336;
+  cursor: not-allowed;
+}
