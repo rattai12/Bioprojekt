@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Booking Form</title>
+</head>
+<body>
+    <h1>Movie Booking Form</h1>
+    <form action="/book" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phoneNb">Phone Number:</label>
+        <input type="text" id="phoneNb" name="phoneNb" required>
+
+        <label for="screening_id">Screening:</label>
+        <select id="screening_id" name="screening_id" required>
+            {% for screening in screenings %}
+            <!-- Assuming screening tuple format is (ScreeningID, MovieID, Timeslot) -->
+            <option value="{{ screening['ScreeningID'] }}">{{ screening['Title'] }} - {{ screening['Timeslot'] }}</option>
+
+            {% endfor %}
+        </select>
+
+        <label>Seats:</label><br>
+        <div id="seats-container">
+            {% for seat in available_seats %}
+            <label for="seat{{ seat['SeatID'] }}">Seat {{ seat['SeatNb'] }}</label>
+            <input type="checkbox" id="seat{{ seat['SeatID'] }}" name="seat_ids" value="{{ seat['SeatNb'] }}">
+            {% endfor %}
+        </div>
+        <input type="submit" value="Book Seats">
+    </form>
+</body>
+</html>
