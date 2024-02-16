@@ -1,0 +1,21 @@
+.movie-thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .movie {
+    margin: 20px;
+    text-align: center;
+  }
+  
+  .movie img {
+    max-width: 200px; /* Limit the maximum width of the image */
+    max-height: 300px; /* Limit the maximum height of the image */
+  }
+  
+  .movie a {
+    display: block;
+    margin-top: 10px;
+    text-decoration: none;
+  }

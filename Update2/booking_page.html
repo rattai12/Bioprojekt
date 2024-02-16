@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='style_booking.css') }}">
+    <title>Bokning</title>
+</head>
+<body>
+    <h1>Movie Booking Form</h1>
+    <form action="/book" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phoneNb">Phone Number:</label>
+        <input type="text" id="phoneNb" name="phoneNb" required>
+
+        <label for="screening_id">Showtime:</label>
+        <select id="screening_id" name="screening_id" required>
+            {% for screening in screenings %}
+            <!-- Assuming screening tuple format is (ScreeningID, MovieID, Timeslot) -->
+            <option value="{{ screening['ScreeningID'] }}">{{ screening['Title'] }} - {{ screening['Timeslot'] }}</option>
+
+            {% endfor %}
+        </select>
+
+        <label>Seats:</label><br>
+        <ul class="showcase">
+            <li>
+                <div class="seat"></div>
+                <small>Available</small>
+            </li>
+            <li>
+                <div class="seat selected"></div>
+                <small>Selected</small>
+            </li>
+            <li>
+                <div class="seat sold"></div>
+                <small>Sold</small>
+            </li>
+        </ul>
+        
+        <div class="container">
+            <div class="screen"></div>
+            {% for seat in seats %}
+            <div class="row">
+                <div class="seat {% if seat['Status'] == 'Reserved' %}sold{% else %}available{% endif %}" id="seat{{ seat['SeatID'] }}">
+                    {{ seat['SeatNb'] }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        
+        <input type="submit" value="Book Seats">
+    </form>
+</body>
+</html>

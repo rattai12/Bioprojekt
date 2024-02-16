@@ -1,0 +1,58 @@
+/* Base container styling */
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Screen representation to appear like a cinema screen */
+.screen {
+    width: 80%;
+    height: 20px;
+    background: #5c6bc0; /* A color that represents the screen */
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+/* Flexbox for row layout */
+.row {
+    display: flex;
+    justify-content: center;
+}
+
+/* Base seat styling */
+.seat {
+    width: 30px;
+    height: 30px;
+    margin: 5px 3px;
+    border-radius: 5px; /* Rounded corners for seats */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px; /* Adjust based on preference */
+    color: #fff;
+    cursor: pointer; /* Indicates the seat is clickable */
+    transition: transform 0.3s ease; /* Smooth transition for interaction */
+}
+
+/* Hover effect for seats */
+.seat:hover {
+    transform: scale(1.1); /* Slightly enlarge seats on hover */
+}
+
+/* Styling for available seats */
+.available {
+    background-color: #66bb6a; /* A vibrant color to indicate availability */
+}
+
+/* Styling for occupied seats */
+.occupied {
+    background-color: #ef5350; /* A color to indicate the seat is taken */
+    cursor: not-allowed; /* Changes cursor to indicate seat cannot be selected */
+}
+
+/* Styling for selected seats */
+.selected {
+    background-color: #ffa726; /* A distinct color to show selection */
+}
