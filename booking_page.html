@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='style_booking.css') }}">
+    <title>Bokning</title>
+</head>
+<body>
+    <h1>Movie Booking Form</h1>
+    <form action="/book" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="phoneNb">Phone Number:</label>
+        <input type="text" id="phoneNb" name="phoneNb" required>
+
+        <label for="screening_id">Showtime:</label>
+        <select id="screening_id" name="screening_id" required>
+            {% for screening in screenings %}
+            <!-- Assuming screening tuple format is (ScreeningID, MovieID, Timeslot) -->
+            <option value="{{ screening['ScreeningID'] }}">{{ screening['Title'] }} - {{ screening['Timeslot'] }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Seats:</label><br>
+        <div class="container">
+            <div class="screen"></div>
+            <div class="row">
+                {% for row in range(1, 6) %}
+                <div class="seat-row">
+                    {% for seat in range(1, 5) %}
+                    <div class="seat">
+                        <input type="checkbox" id="seat{{ (row-1)*4 + seat }}" name="seat{{ (row-1)*4 + seat }}">
+                        <label for="seat{{ (row-1)*4 + seat }}">{{ (row-1)*4 + seat }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <input type="submit" value="Book Seats">
+    </form>
+
+    <script>
+        const container = document.querySelector('.container');
+        const seats = document.querySelectorAll('.row .seat:not(.sold)');
+        const count = document.getElementById('count');
+        const total = document.getElementById('total');
+        const screening_id = document.getElementById('screening_id');
+        const movie_id = document.getElementById('movie_id');
+        const selectedSeats = document.querySelectorAll('.row .seat.selected');
+        const selectedSeatsCount = selectedSeats.length;
+        const selectedSeatsIndex = [...selectedSeats].map(seat => [...seats].indexOf(seat));
+        const selectedSeatsIds = [...selectedSeats].map(seat => seat.id);
+
+        container.addEventListener('click', e => {
+            if (e.target.classList.contains('seat') && !e.target.classList.contains('sold')) {
+                e.target.classList.toggle('selected');
+                updateSelectedCount();
+            }
+        });
+
+        function updateSelectedCount() {
+            const selectedSeats = document.querySelectorAll('.row .seat.selected');
+            const selectedSeatsCount = selectedSeats.length;
+            const selectedSeatsIndex = [...selectedSeats].map(seat => [...seats].indexOf(seat));
+            const selectedSeatsIds = [...selectedSeats].map(seat => seat.id);
+            count.innerText = selectedSeatsCount;
+            total.innerText = selectedSeatsCount * screening_id.value;
+        }
+
+        screening_id.addEventListener('change', e => {
+            updateSelectedCount();
+        });
+
+        updateSelectedCount();
+    </script>
+</body>
+</html>
