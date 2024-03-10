@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link rel="icon" href="https://cdn0.iconfinder.com/data/icons/everyday-objects-1/128/movie-clapboard-512.png" type="image/x-icon"> <!-- Lägger till en ikon i fliken -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-identity">
+            <h1><a href="#">Mainpage</a></h1>
+        </div>
+        <nav class="site-navigation">
+            <ul class="nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/cancel_booking">Cancel Booking</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Hämtar flashmeddelanden som skickas från Flask, kategorien sätts beroende på om det är success eller error -->
+    <section id="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </section>
+
+    <div class="transparent-box">
+        <h1>Welcome to our Cinema</h1>
+        <div class="movie-thumbnails">
+            {% for movie in movies %}
+            <div class="movie"> <!-- Loopar igenom alla filmer från databasen och visar dem som thumbnails -->
+                <a href="/movie/{{ movie.MovieID }}">
+                    <img src="{{ movie.ThumbnailURL }}" alt="{{ movie.Title }}">
+                    <div>{{ movie.Title }}</div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>

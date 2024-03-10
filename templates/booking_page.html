@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://cdn0.iconfinder.com/data/icons/everyday-objects-1/128/movie-clapboard-512.png" type="image/x-icon">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='style.css') }}"><!-- Hänvisar till static-mappen där style.css ligger -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script> <!--Hänvisar till static-mappen där script.js ligger -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- -->
+    <title>Bokning</title>
+</head>
+<body>
+
+
+    <header class="site-header">
+        <div class="site-identity">
+            <h1><a href="#">Booking page</a></h1>
+        </div>
+        <nav class="site-navigation">
+            <ul class="nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/cancel_booking">Cancel Booking</a></li>
+            </ul>
+
+    <div class
+     data-screening-id="{{ screening_id }}"></body>
+
+    <div class="transparent-box"> <!-- Transparent box som är där innehållet på hemsidan är, så som filmer men även platsbokningarna -->
+    <div class="form-container">
+        <img id="movie-thumbnail" src="" alt="Movie Thumbnail" class="thumbnail-image">
+    <form action="/book" method="post"> <!-- Formuläret skickar en POST request till /book som är en route i app.py-->
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" class="input-field" required>
+        <br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" class="input-field" required>
+        <br>
+
+        <label for="phoneNb">Phone Number:</label>
+        <input type="text" id="phoneNb" name="phoneNb" class="input-field" required>
+        <br>
+
+        <label for="screening_id">Showtime:</label>
+            
+        <select id="screening_id" name="screening_id" class="input-field" required>
+            <option value="" selected disabled>Select a showtime</option>
+            {% for screening in screenings %}
+            <!-- Loopar igenom alla screenings och visar dem i en dropdown) -->
+            
+            <option value="{{ screening['ScreeningID'] }}">{{ screening['Title'] }} - {{ screening['Timeslot'] }}</option>
+            {% endfor %}
+            </select>
+
+        
+        <div class="screen"></div> <!-- Div som visar bioduken relativt sett mot platserna. -->
+        <div class="row"> 
+            {% for row in range(1, 6) %} <!-- Loopar igenom 5 rader och skapar en div för varje rad med 4 platser i varje rad.-->
+            <div class="seat-row">
+                {% for seat in range(1, 5) %} <!-- Loopar igenom 4 platser och skapar en div för varje plats-->
+                {% set seatID = (row-1)*4 + seat %} <!-- Sätter seatID till (row-1)*4 + seat -->
+                <div class="seat {% if (seatID|string) in booked_seats %}reserved{% endif %}"> <!-- Skapar en div för varje plats och sätter klassen till reserved om platsen är bokad. -->
+                    <!-- Skapar en checkbox för varje plats och sätter id till seat{{ seatID }} och name till seat{{ seatID }}. Om platsen är bokad sätts disabled och checked till true. -->
+                    <input type="checkbox" id="seat{{ seatID }}" name="seat{{ seatID }}" 
+                           {% if (seatID|string) in booked_seats %}disabled checked{% endif %}>
+                    <label for="seat{{ seatID }}">{{ seatID }}</label>
+                </div>
+
+                
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+        <input type="submit" value="Book Seats">
+    </div>
+    {% with messages = get_flashed_messages() %} <!--   Här visas flashmeddelanden som visas när en användare bokar/avbokar platser. -->
+    {% if messages %}
+      <div id="flash-messages">
+        {% for message in messages %}
+          <div class="alert">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+          <div class="seats"></div>
+    </form>
+    </div>
+        
+</body>
+</html>

@@ -1,0 +1,255 @@
+body { 
+    background-color: rgb(220,213, 178);
+    font-family: 'Segoe UI', 'Roboto', Tahoma;
+    background-image: var(--app-bg);
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    height: 100%;
+    overflow: hidden;
+    background-image: url("https://cdn.pixabay.com/photo/2016/06/03/12/42/popcorn-1433327_1280.jpg");
+    background-repeat: no-repeat;
+}
+
+.side {
+    position: relative;
+    background-color: rgba(229, 229, 229, 0.7);
+    float: left;
+    width: 250px; 
+    height: 100%; 
+}
+
+.transparent-box input[type="submit"] {
+    width: calc(50% - 16px);
+    padding: 8px;
+    background-color: #B3A975;
+    color: white;
+    border: none;
+    cursor: pointer;
+    justify-content: center;
+    text-align: center;
+    display: flex;
+}
+
+.transparent-box input[type="submit"]:hover {
+    background-color: #bc9065;
+}
+
+.transparent-box input[type="text"] {
+    width: calc(50% - 16px);
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+}
+
+.transparent-box {
+    background-color: rgba(229, 229, 229, 0.7);
+    padding: 40px;
+    width: 600px;
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-container {
+    margin-bottom: 20px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 10px;
+    gap: 10px;
+} 
+
+.image-container img {
+    width: 100%;
+    height: auto;
+}
+
+input[type="text"],
+input[type="submit"] {
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+    color: #5b4221;
+    margin-bottom: 20px;
+}
+
+.links-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.links-container a {
+    text-decoration: none;
+    padding: 10px;
+    margin: 0 10px;
+    background-color: #c2a55d;
+    color: white;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+.links-container a:hover {
+    background-color: #a78645;
+}
+
+.seats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    text-align: center;
+}
+
+.seat {
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #eee; /* Default seat color */
+}
+.screen {
+    background-color: #dadada;
+    height: 150px;
+    width: 80%;
+    margin: 15px auto;
+    transform: rotateX(-48deg);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.thumbnail-image {
+    width: 22%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 20px;
+    padding: 1%;
+}
+
+.movie-thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.movie {
+    margin: 20px;
+    text-align: center;
+}
+
+.movie img {
+    max-width: 200px;
+    max-height: 300px;
+    border-radius: 20px;
+}
+
+.movie a {
+    display: block;
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.input-field {
+    flex-grow: 1;
+    min-width: 0; 
+    max-width: 400px;
+    height: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+}
+a:hover {
+    color: rgb(179, 179, 179);
+}
+.site-header {
+    border-bottom: 1px solid #ccc;
+    padding: 0.5em 1em;
+    display: flex;
+    justify-content: space-between;
+}
+.site-identity h1 {
+    font-size: 1.5em;
+    margin: 0.6em 0;
+    display: inline-block;
+}
+.site-navigation ul,
+.site-navigation li {
+    margin: 0;
+    padding: 0;
+}
+.site-navigation li {
+    display: inline-block;
+    margin: 1.4em 1em 1em 1em;
+}
+#flash-messages {
+    margin-top: 20px; /* Adjust space above the flash message box */
+    text-align: center; /* Center the flash messages if desired */
+    /* More styling as needed */
+}
+
+
+.alert-success {
+    position: fixed;
+    left: 50%; 
+    top: 150px;
+    transform: translate(-50%, 0);
+
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    padding: 20px; /* Increased padding */
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 18px; /* Increased font size */
+}
+
+.alert-error {
+    position: fixed;
+    left: 50%; 
+    top: 150px;
+    transform: translate(-50%, 0);
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 18px;
+}
+
+:checked {
+    background-color: #c2a55d;
+};
+
+

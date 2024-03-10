@@ -15,16 +15,16 @@ dbconfig = {
     "database": "test2"
 }
 
-cnx_pool = mysql.connector.pooling.MySQLConnectionPool(pool_name="mypool", pool_size=5, **dbconfig) # Denna rad skapar en connection pool för att hantera flera användare samtidigt. Man kan max ha 5 användare samtidigt.
+cnx_pool = mysql.connector.pooling.MySQLConnectionPool(pool_name="mypool", pool_size=5, **dbconfig) 
 
 @app.route('/') # Denna funktion kopplar ihop med databasen och hämtar alla filmer, samt deras thumbnailURL. ThumbnailURL visas på hemsidan med hjälp av en bildhost. 
 def mainpage():
-    connection = cnx_pool.get_connection() # Hämtar en connection från poolen.
-    cursor = connection.cursor() #cursor används för att skicka SQL frågor till databasen.
+    connection = cnx_pool.get_connection()
+    cursor = connection.cursor()
     cursor.execute("SELECT MovieID, Title, ThumbnailURL FROM Movies ORDER BY MovieID")
     movies = [{'MovieID': row[0], 'Title': row[1], 'ThumbnailURL': row[2]} for row in cursor.fetchall()]
-    cursor.close() #Stänger cursor
-    connection.close() #Stänger connection för att frigöra den till poolen igen.
+    cursor.close()
+    connection.close()
     print("Movies:", movies)  #Skriv ut filmer, för debugging
     return render_template('mainpage.html', movies=movies)
 
@@ -32,34 +32,34 @@ def mainpage():
 def movie_details(movie_id):
     connection = cnx_pool.get_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT Title FROM Movies WHERE MovieID = %s", (movie_id,)) # Denna SQL fråga hämtar titeln för en specifik film med hjälp av MovieID.
-    movie_title = cursor.fetchone()[0] # Detta ger oss titeln för filmen och vi sparar den i variabeln movie_title.
-    #Nedanstående SQL fråga hämtar alla screenings för en specifik film med hjälp av MovieID.
-    cursor.execute(""" 
+    cursor.execute("SELECT Title FROM Movies WHERE MovieID = %s", (movie_id,))
+    movie_title = cursor.fetchone()[0]
+    cursor.execute("""
         SELECT ScreeningID, Timeslot
         FROM Screenings
         WHERE MovieID = %s
         ORDER BY Timeslot
     """, (movie_id,))
-    screenings = [{'ScreeningID': row[0], 'Timeslot': row[1].strftime('%Y-%m-%d %H:%M')} for row in cursor.fetchall()] # För varje rad i resultatet från SQL frågan så läggs raden till i listan screenings.
+    screenings = [{'ScreeningID': row[0], 'Timeslot': row[1].strftime('%Y-%m-%d %H:%M')} for row in cursor.fetchall()]
     cursor.close()
     connection.close()
-    print("Movie Title:", movie_title)  # Skriv ut filmens titel, för debugging
-    print("Screenings:", screenings)  # Skriv ut screenings, för debugging
-    return render_template('booking_page.html', movie_title=movie_title, screenings=screenings) #Renderar booking_page.html med variablerna movie_title och screenings som hanteras i HTML filen.
+    print("Movie Title:", movie_title)  # Print movie title
+    print("Screenings:", screenings)  # Print screenings
+    return render_template('booking_page.html', movie_title=movie_title, screenings=screenings)
 
 
 @app.route('/movie_image/<int:movie_id>')
 def movie_image(movie_id):
     connection = cnx_pool.get_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT ThumbnailURL FROM Movies WHERE MovieID = %s", (movie_id,)) #Denna SQL fråga hämtar thumbnailURL för en specifik film med hjälp av MovieID.
-    thumbnail_url = cursor.fetchone()[0] #Detta ger oss thumbnailURL för filmen och vi sparar den i variabeln thumbnail_url.
+    cursor.execute("SELECT ThumbnailURL FROM Movies WHERE MovieID = %s", (movie_id,))
+    thumbnail_url = cursor.fetchone()[0]
     cursor.close()
     connection.close()
-    print("Thumbnail URL:", thumbnail_url)  # Skriv ut thumbnailURL, för debugging
-    return jsonify(url=thumbnail_url) #Returnerar thumbnailURL i JSON format. Sedan används denna URL för att visa bilden på hemsidan på mainpage.html.
- 
+    print("Thumbnail URL:", thumbnail_url)  # Print thumbnail URL
+    return jsonify(url=thumbnail_url)
+
+
 
 
 
@@ -69,11 +69,11 @@ def booked_seats(screening_id):
     connection = cnx_pool.get_connection()
     cursor = connection.cursor()
     booked_seats = [] #Skapar en tom lista för att fylla med bokade platser.
-    #Nedanstående SQL fråga hämtar alla bokade platser för en specifik film med hjälp av ScreeningID.
+
     cursor.execute("""
-        SELECT BookingSeats.SeatID 
-        FROM BookingSeats
-        WHERE BookingSeats.ScreeningID = %s
+        SELECT bookingseats.SeatID
+        FROM bookingseats
+        WHERE bookingseats.ScreeningID = %s
     """, (screening_id,))
 
     for row in cursor.fetchall(): #För varje rad i resultatet från SQL frågan så läggs raden till i listan booked_seats.
@@ -81,14 +81,13 @@ def booked_seats(screening_id):
 
     cursor.close()
     connection.close()
-    print(booked_seats) #Skriv ut bokade platser, för debugging
+    print(booked_seats)
     return jsonify(booked_seats=booked_seats) #Returnerar bokade platser för en specifik film i JSON format. 
 
 @app.route('/booking_page') #Denna funktion kopplar ihop med databasen och hämtar alla filmer, samt deras thumbnailURL. ThumbnailURL visas på hemsidan med hjälp av en bildhost.
 def index():
     connection = cnx_pool.get_connection()
     cursor = connection.cursor()
-    #Nedanstående SQL fråga hämtar alla screenings och deras thumbnailURL. Sedan sorteras de efter filmens titel och tidpunkt.
     cursor.execute("""
         SELECT Screenings.ScreeningID, Movies.Title, Screenings.Timeslot
         FROM Screenings
@@ -100,74 +99,75 @@ def index():
         'Title': row[1],
         'Timeslot': row[2].strftime('%Y-%m-%d %H:%M')
     } for row in cursor.fetchall()]
-    print("Screenings:", screenings)  # Skriv ut screenings, för debugging
+    print("Screenings:", screenings)  # Print screenings, for debugging
     cursor.close()
     connection.close()
     return render_template('booking_page.html', screenings=screenings)
 
-
-
-
-
 @app.route('/book', methods=['POST']) #Denna funktion används för att boka en film. Funktionen tar in namn, email, telefonnummer, screening_id och valda platser som input från forumläret på webbsidan.  
 #Funktionen kopplar ihop med databasen och lägger till en ny kund i Customers tabellen om kunden inte redan finns. Sedan läggs en ny bokning till i Bookings tabellen.
 def book():
-    #Hämtar information från formuläret som användaren fyllt i på booking_page.html
-    name = request.form['name'] 
-    email = request.form['email'] 
+    name = request.form['name']
+    email = request.form['email']
     phone_nb = request.form['phoneNb']
     screening_id = request.form['screening_id']
+    
 
-    selected_seats = [] #Skapar en tom lista för att fylla med valda platser.
-    for key in request.form.keys(): # För varje key i request.form.keys() så kollar vi om key börjar med 'seat'. Om det gör det så lägger vi till det i listan selected_seats.
+    selected_seats = []
+    for key in request.form.keys():
         if key.startswith('seat'):
+            # Check if the checkbox was selected
             if 'on' == request.form[key]:
+                # Extract the seat ID from the name (e.g., 'seat1' -> '1')
                 seat_id = key.replace('seat', '')
                 selected_seats.append(int(seat_id))
             
-    print(f"Selected seats: {selected_seats}") #Skriv ut valda platser, för debugging
+    print(f"Selected seats: {selected_seats}")
 
     connection = cnx_pool.get_connection()
     cursor = connection.cursor()
 
     try:
-        connection.start_transaction() # Startar en transaktion för att kunna göra flera SQL frågor samtidigt???????????????????????????????????????????????????????????????????????
-        cursor.execute("SELECT CustomerID FROM Customers WHERE PhoneNb = %s", (phone_nb,)) #Kollar om kunden redan finns i Customers tabellen med hjälp av telefonnummer.
-        result = cursor.fetchone() #Hämtar resultatet från SQL frågan.
-        if result: #om kunden redan finns så hämtar vi CustomerID från resultatet.
+        connection.start_transaction() # Starta en transaktion för att säkerställa att allt går rätt till. annars rollback.
+        cursor.execute("SELECT CustomerID FROM Customers WHERE PhoneNb = %s", (phone_nb,))
+        result = cursor.fetchone()
+        if result:
             customer_id = result[0]
         else:
-            cursor.execute("INSERT INTO Customers (Name, Email, PhoneNb) VALUES (%s, %s, %s)", #Om kunden inte finns så lägger vi till en ny kund i Customers tabellen.
+            cursor.execute("INSERT INTO Customers (Name, Email, PhoneNb) VALUES (%s, %s, %s)",
                            (name, email, phone_nb))
-            customer_id = cursor.lastrowid #Hämtar CustomerID för den nya kunden.
-        
-        cursor.execute("INSERT INTO Bookings (CustomerID, ScreeningID) VALUES (%s, %s)", #Lägger till en ny bokning i Bookings tabellen.
+            customer_id = cursor.lastrowid
+
+        cursor.execute("INSERT INTO Bookings (CustomerID, ScreeningID) VALUES (%s, %s)",
                        (customer_id, screening_id))
         booking_id = cursor.lastrowid
 
-        # Kollar om platserna redan är bokade för denna screening. Om de är bokade så skrivs ett felmeddelande ut och bokningen avbryts. Denna kontroll görs för att undvika att två kunder bokar samma plats samtidigt.
-        for seat_id in selected_seats:
-            cursor.execute("SELECT * FROM BookingSeats WHERE SeatID = %s AND ScreeningID = %s", (seat_id, screening_id)) 
+        # Use selected_seats for booking instead of seat_ids
+        for seat_id in selected_seats:  # Assuming selected_seats are the actual IDs needed
+            # Verify if the seat is already booked for the screening
+            cursor.execute("SELECT * FROM BookingSeats WHERE SeatID = %s AND ScreeningID = %s", (seat_id, screening_id))
             if cursor.fetchone():
                 raise Exception(f"Seat {seat_id} is already booked for this screening.")
+            # Insert into BookingSeats
             cursor.execute("INSERT INTO BookingSeats (BookingID, SeatID, ScreeningID) VALUES (%s, %s, %s)",
                            (booking_id, seat_id, screening_id))
 
         connection.commit()
-        flash('Booking successful!', 'success') #Skickar ett meddelande till användaren om att bokningen lyckades med hjälp av flash, detta hantera i HTML.
-    except Exception as e:
+        flash('Booking successful!', 'success')
+    except mysql.connector.Error as e:
         connection.rollback()
         print(f"Error: {e}")
-        flash(f'Looks like someone else just booked one of your seats. Please select a different seat and try booking again', 'error') #Skickar ett meddelande till användaren om att bokningen misslyckades med hjälp av flash, detta hantera i HTML.
+        flash(f'An error occurred with the booking: {str(e)}', 'error')
+        
     finally:
         cursor.close()
         connection.close()  
-        return redirect('/') #Oavsett om bokningen lyckades eller misslyckades så skickas användaren tillbaka till hemsidan. Där flash meddelandet visas.
-
+       # time.sleep(1)
+        return redirect('/')
     
 @app.route('/delete_bookings', methods=['POST']) #Denna funktion används för att avboka platser, den tar email som input och avbokar dessa platser för kunden med det email som skickas in.
 def delete_bookings():
-    email = request.form['email']  # Hämtar email från formuläret som användaren fyllt i på cancel_booking.html
+    email = request.form['email']  # Assuming email is sent in the form data
 
     connection = cnx_pool.get_connection()
     cursor = connection.cursor()
@@ -176,10 +176,10 @@ def delete_bookings():
         # Koppla ihop med databasen
         connection.start_transaction()
 
-        # Hämta CustomerID för email från Customers tabellen i databasen.
+        # Hämta CustomerID för email
         cursor.execute("SELECT CustomerID FROM Customers WHERE Email = %s", (email,))
         customer_result = cursor.fetchone()
-        if not customer_result: #Om det inte finns någon kund med det email som skickas in så skickas ett felmeddelande tillbaka.
+        if not customer_result:
             return jsonify(message="No customer found with the given email"), 404
         customer_id = customer_result[0]
 
@@ -192,15 +192,15 @@ def delete_bookings():
             cursor.execute("DELETE FROM BookingSeats WHERE BookingID = %s", (booking_id,))
 
         
-        connection.commit() #Commit om allt gick bra.
-        flash('Booking cancelled!', 'success') #Skickar ett meddelande till användaren om att avbokningen lyckades med hjälp av flash, detta hantera i HTML.
+        connection.commit()
+        flash('Booking cancelled!', 'success')
     except mysql.connector.Error as e:
-        connection.rollback() #Rollback om något gick snett. Skriv ut felmeddelande.
-        flash('Error, could not cancel seats, try again!: ' + str(e), 'error')
+        # Rollback ifall något går snett. Skriv ut felmeddelande.
+        connection.rollback()
+        return jsonify(message=f"An error occurred: {e}"), 500
     finally:
         cursor.close()
         connection.close()
-        return redirect('/')
 
 @app.route('/cancel_booking') #Renderar sidan för att avboka bokningar
 def delete_form():
